@@ -1,16 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FileImage } from "lucide-react";
+import { store } from "@/lib/store";
+import { useNavigate } from "react-router-dom";
 
 const AddMeme = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [image, setImage] = useState("/placeholder.svg");
+  const [image, setImage] = useState<string>("/placeholder.svg");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Проверяем, авторизован ли пользователь
+    const currentUser = store.getCurrentUser();
+    if (!currentUser) {
+      // Если пользователь не авторизован, перенаправляем на страницу входа
+      navigate("/login", { replace: true });
+    } else {
+      setIsLoggedIn(true);
+    }
+  }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,14 +41,28 @@ const AddMeme = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // В реальном приложении здесь был бы код для отправки мема на сервер
-    console.log({ title, description, category, image });
-    alert("Мем добавлен успешно! (в демо режиме)");
-    // Очистка формы
-    setTitle("");
-    setDescription("");
-    setCategory("");
-    setImage("/placeholder.svg");
+    
+    if (!isLoggedIn) {
+      alert("Войдите в систему, чтобы добавить мем");
+      navigate("/login");
+      return;
+    }
+    
+    // Добавляем мем в хранилище
+    const newMeme = store.addMeme(title, image, description, category);
+    
+    if (newMeme) {
+      alert("Мем успешно добавлен!");
+      // Очистка формы
+      setTitle("");
+      setDescription("");
+      setCategory("");
+      setImage("/placeholder.svg");
+      // Перенаправляем на главную страницу
+      navigate("/");
+    } else {
+      alert("Произошла ошибка при добавлении мема");
+    }
   };
 
   return (

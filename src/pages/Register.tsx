@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { store } from "@/lib/store";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -12,6 +13,15 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState("/placeholder.svg");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Если пользователь уже вошел, перенаправляем на главную
+    if (store.getCurrentUser()) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,9 +37,23 @@ const Register = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // В реальном приложении здесь был бы код для отправки данных на сервер
-    console.log({ username, password, bio, avatar });
-    alert("Регистрация успешна! (в демо режиме)");
+    
+    // Проверяем, что пароли совпадают
+    if (password !== confirmPassword) {
+      setError("Пароли не совпадают");
+      return;
+    }
+    
+    // Пытаемся зарегистрировать пользователя
+    const newUser = store.registerUser(username, password, bio, avatar);
+    
+    if (newUser) {
+      // Если успешно, перенаправляем на главную
+      navigate("/");
+    } else {
+      // Если ошибка, показываем сообщение
+      setError("Пользователь с таким именем уже существует");
+    }
   };
 
   return (
@@ -41,6 +65,12 @@ const Register = () => {
           <h2 className="text-3xl font-impact mb-6 text-center">
             Регистрация нового мемолога
           </h2>
+          
+          {error && (
+            <div className="bg-black text-white p-2 mb-4 wonky-border-white text-center">
+              {error}
+            </div>
+          )}
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col items-center mb-4">

@@ -1,18 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { store } from "@/lib/store";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [avatar, setAvatar] = useState("/placeholder.svg");
-  const [username, setUsername] = useState("мемный_воин2025");
-  const [bio, setBio] = useState("Я генерирую мемы как жизненный поток!");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
   const [telegram, setTelegram] = useState("");
   const [vk, setVk] = useState("");
   const [youtube, setYoutube] = useState("");
   const [cardNumber, setCardNumber] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Проверяем, авторизован ли пользователь
+    const currentUser = store.getCurrentUser();
+    if (!currentUser) {
+      // Если пользователь не авторизован, перенаправляем на страницу входа
+      navigate("/login", { replace: true });
+      return;
+    }
+    
+    // Загружаем данные пользователя
+    setUsername(currentUser.username);
+    setBio(currentUser.bio || "");
+    setAvatar(currentUser.avatar || "/placeholder.svg");
+    setTelegram(currentUser.telegram || "");
+    setVk(currentUser.vk || "");
+    setYoutube(currentUser.youtube || "");
+    setCardNumber(currentUser.cardNumber || "");
+  }, [navigate]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -24,6 +46,29 @@ const Profile = () => {
       };
       reader.readAsDataURL(e.target.files[0]);
     }
+  };
+
+  const handleSave = () => {
+    // Обновляем профиль пользователя
+    const updatedUser = store.updateUserProfile({
+      bio,
+      avatar,
+      telegram,
+      vk,
+      youtube,
+      cardNumber
+    });
+    
+    if (updatedUser) {
+      alert("Профиль успешно обновлен!");
+    } else {
+      alert("Произошла ошибка при обновлении профиля");
+    }
+  };
+
+  const handleLogout = () => {
+    store.logoutUser();
+    navigate("/");
   };
 
   return (
@@ -64,9 +109,10 @@ const Profile = () => {
                 <label className="block mb-1 font-bold">Имя пользователя:</label>
                 <Input 
                   value={username} 
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="border-black wonky-border"
+                  disabled
+                  className="border-black wonky-border bg-gray-100"
                 />
+                <p className="text-sm mt-1 italic">*Имя пользователя нельзя изменить</p>
               </div>
               
               <div>
@@ -131,11 +177,19 @@ const Profile = () => {
             </div>
           </div>
           
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex justify-between">
             <Button 
               className="bg-black text-white font-bold hover:bg-gray-800 wonky-border-white"
+              onClick={handleSave}
             >
               Сохранить изменения
+            </Button>
+            
+            <Button 
+              className="bg-white text-black border border-black font-bold hover:bg-gray-100 wonky-border"
+              onClick={handleLogout}
+            >
+              Выйти из аккаунта
             </Button>
           </div>
         </div>

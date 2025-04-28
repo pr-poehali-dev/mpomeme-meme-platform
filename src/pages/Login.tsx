@@ -1,19 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { store } from "@/lib/store";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Если пользователь уже вошел, перенаправляем на главную
+    if (store.getCurrentUser()) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // В реальном приложении здесь был бы код для аутентификации
-    console.log({ username, password });
-    alert("Вход выполнен успешно! (в демо режиме)");
+    
+    // Пытаемся авторизовать пользователя
+    const user = store.loginUser(username, password);
+    
+    if (user) {
+      // Если успешно, перенаправляем на главную
+      navigate("/");
+    } else {
+      // Если нет, показываем ошибку
+      setError("Неверное имя пользователя или пароль");
+    }
   };
 
   return (
@@ -23,8 +41,14 @@ const Login = () => {
       <main className="flex-grow pb-8 px-4">
         <div className="max-w-md mx-auto border border-black p-4 wonky-border bg-white">
           <h2 className="text-3xl font-impact mb-6 text-center">
-            Вход в MPOMEME
+            Вход мемолога
           </h2>
+          
+          {error && (
+            <div className="bg-black text-white p-2 mb-4 wonky-border-white text-center">
+              {error}
+            </div>
+          )}
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -60,7 +84,7 @@ const Login = () => {
             </div>
             
             <div className="text-center pt-2">
-              <p>Нет аккаунта? <Link to="/register" className="underline">Зарегистрироваться</Link></p>
+              <p>Еще нет аккаунта? <Link to="/register" className="underline">Зарегистрироваться</Link></p>
             </div>
           </form>
         </div>

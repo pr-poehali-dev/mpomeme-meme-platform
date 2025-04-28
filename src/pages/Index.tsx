@@ -1,26 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MemeCard from "@/components/MemeCard";
 import EmptyState from "@/components/EmptyState";
 import SortSelector from "@/components/SortSelector";
-
-// Пустой массив мемов
-const MOCK_MEMES: any[] = [];
+import { store, Meme } from "@/lib/store";
 
 const Index = () => {
   const [sortType, setSortType] = useState("new");
-  const [memes, setMemes] = useState(MOCK_MEMES);
+  const [memes, setMemes] = useState<Meme[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // При загрузке страницы загружаем мемы
+  useEffect(() => {
+    refreshMemes();
+    // Проверяем, авторизован ли пользователь
+    setIsLoggedIn(!!store.getCurrentUser());
+  }, []);
+
+  // Обновляем список мемов
+  const refreshMemes = () => {
+    if (sortType === "popular") {
+      setMemes(store.getMemesSortedByPopular());
+    } else {
+      setMemes(store.getMemesSortedByNew());
+    }
+  };
 
   const handleSortChange = (value: string) => {
     setSortType(value);
     
     // Сортировка мемов
     if (value === "popular") {
-      setMemes([...MOCK_MEMES].sort((a, b) => b.likes - a.likes));
+      setMemes(store.getMemesSortedByPopular());
     } else {
-      setMemes(MOCK_MEMES); // По умолчанию - сортировка по новизне (id)
+      setMemes(store.getMemesSortedByNew());
     }
+  };
+
+  const handleLike = (memeId: string) => {
+    store.likeMeme(memeId);
+    refreshMemes();
   };
 
   return (
@@ -38,7 +58,12 @@ const Index = () => {
           {memes.length > 0 ? (
             <div className="space-y-6">
               {memes.map((meme) => (
-                <MemeCard key={meme.id} {...meme} />
+                <MemeCard 
+                  key={meme.id} 
+                  meme={meme} 
+                  isLoggedIn={isLoggedIn}
+                  onLike={handleLike}
+                />
               ))}
             </div>
           ) : (

@@ -2,78 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Impact';
+  src: local('Impact'), url('https://fonts.cdnfonts.com/css/impact') format('woff');
+}
+
+@font-face {
+  font-family: 'Times';
+  src: local('Times New Roman'), local('TimesNewRoman'), url('https://fonts.cdnfonts.com/css/times-new-roman') format('woff');
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 93%;
-    --secondary-foreground: 0 0% 0%;
-
-    --muted: 0 0% 93%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: 0 0% 93%;
-    --accent-foreground: 0 0% 0%;
-
-    --destructive: 0 0% 0%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 80%;
-    --input: 0 0% 80%;
-    --ring: 0 0% 0%;
-
-    --radius: 0.25rem;
   }
-}
-
-@layer base {
+  
+  /* Добавляем только черно-белые цвета */
+  :root {
+    --black: 0 0% 0%;
+    --white: 0 0% 100%;
+    --gray-100: 0 0% 97%;
+    --gray-200: 0 0% 90%;
+    --gray-300: 0 0% 85%;
+    --gray-400: 0 0% 75%;
+    --gray-500: 0 0% 60%;
+    --gray-600: 0 0% 45%;
+    --gray-700: 0 0% 30%;
+    --gray-800: 0 0% 20%;
+    --gray-900: 0 0% 10%;
+  }
+  
   * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-family: "Times New Roman", serif;
-  }
-  
-  .font-impact {
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-  }
-  
-  .text-shadow {
-    text-shadow: 1px 1px 0 #000;
+    @apply border-black;
   }
 }
 
-/* Стиль "на коленке" */
+/* Стиль для обводки элементов в "кривом" стиле */
 .wonky-border {
-  border-width: 2px 3px 4px 1px;
-  border-style: solid;
-  border-color: black;
+  position: relative;
+  border-radius: 3px;
+  transform: rotate(0.3deg);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
 }
 
-.paint-effect {
-  image-rendering: pixelated;
+.wonky-border-white {
+  position: relative;
+  border-radius: 3px;
+  transform: rotate(-0.4deg);
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.3);
 }
 
-.ms-serif {
-  font-family: "Times New Roman", serif;
+/* Стиль для шрифта, похожего на нарисованный в Paint */
+.wonky-text {
+  font-family: 'Times', serif;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
-.rotate-slightly {
-  transform: rotate(0.5deg);
+/* Глобальные шрифты */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Impact', sans-serif;
 }
 
-.rotate-slightly-rev {
-  transform: rotate(-0.7deg);
+/* Применяем специальный шрифт для кнопок */
+button, .button {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+}
+
+/* Дополнительные стили для неровного текста */
+.font-impact {
+  font-family: 'Impact', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.font-times {
+  font-family: 'Times', serif;
 }
