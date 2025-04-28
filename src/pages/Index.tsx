@@ -5,36 +5,8 @@ import MemeCard from "@/components/MemeCard";
 import EmptyState from "@/components/EmptyState";
 import SortSelector from "@/components/SortSelector";
 
-// Моковые данные для примера
-const MOCK_MEMES = [
-  {
-    id: 1,
-    imageUrl: "https://source.unsplash.com/random/800x600?bw,meme",
-    title: "Когда сдал ЕГЭ на 43 балла",
-    description: "Я старался как мог, *честно* XD",
-    author: "ЕГЭник2025",
-    likes: 234,
-    comments: 42
-  },
-  {
-    id: 2,
-    imageUrl: "https://source.unsplash.com/random/800x600?monochrome,funny",
-    title: "Первый день на работе вс последний",
-    description: "Жиза не?? Кто согласен ставь лойс!!!1",
-    author: "работяга",
-    likes: 578,
-    comments: 35
-  },
-  {
-    id: 3,
-    imageUrl: "https://source.unsplash.com/random/800x600?blackandwhite,joke",
-    title: "Мем про учителя инфарматики",
-    description: "На информатике училка все время говарит про какието циклы, а я один сижу и думаю про байтики и дисочки",
-    author: "хацкер228",
-    likes: 189,
-    comments: 26
-  }
-];
+// Пустой массив мемов
+const MOCK_MEMES: any[] = [];
 
 const Index = () => {
   const [sortType, setSortType] = useState("new");
